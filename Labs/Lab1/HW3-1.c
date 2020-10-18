@@ -28,11 +28,8 @@ Data_List initList()
 	return List;
 }
 
-void Insert(Data_List List, Data pPre)
+void Insert(Data_List List, Data Key)
 {//将位置待修改的节点调整到正确位置
-	Data Key = pPre->pNext;		//Key 为位置待调整的节点
-	pPre->pNext = Key->pNext;	//先将 Key抽出
-	
 	Data pTemp = List->pHead;
 	for ( ; (pTemp->pNext != NULL) && (pTemp->pNext->Time > Key->Time); pTemp = pTemp->pNext);
 	//找到与 Key->Time 有相同 Time 的子链表
@@ -57,18 +54,18 @@ void Append(Data_List List, int data)
 			{
 				List->Max_Time = pTemp->Time;	//修改链表中次数最大值
 			}
-			Insert(List, pPre);
+			pPre->pNext = pTemp->pNext;
+			pTemp->pNext = NULL;	//将 pTemp 抽出
+			Insert(List, pTemp);
 			return;
 		}
 		pPre = pTemp;
 	}
-	pTemp = (Data)malloc(sizeof(struct DataNode));	//新建节点, 插入到最后
+	pTemp = (Data)malloc(sizeof(struct DataNode));	//新建节点
 	pTemp->Num = data;
 	pTemp->Time = 1;
 	pTemp->pNext = NULL;
-	pTemp->pNext = List->pHead->pNext;
-	List->pHead->pNext = pTemp;	//先插在头部, 满足 Insert() 函数格式, 再在 Insert() 中插入到合适位置
-	Insert(List, List->pHead);
+	Insert(List, pTemp);
 }
 
 int main()
@@ -77,6 +74,11 @@ int main()
 
 	int length = 0;		//输入数据个数
 	scanf("%d", &length);
+	if (length <= 0)
+	{
+		printf("Input Error!");
+		return 0;
+	}
 	
 	for (int i = 0; i < length; i++)
 	{
@@ -92,23 +94,3 @@ int main()
 
 	return 0;
 }
-
-/*
-
-typedef struct DataNode {
-	int Num;	//记录数字本身
-	int Time;	//记录数字出现次数
-}Data;
-
-int main()
-{
-	int length = 0;
-	scanf("%d", &length);
-	if (length <= 0)
-	{
-		printf("Input Error!");
-		return 0;
-	}
-	
-	
-}*/
