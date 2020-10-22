@@ -58,42 +58,42 @@ int Partition(stud_Node *stud_Array, int low, int high)
 
 int Partition(stud_Node *stud_Array, int low, int high)
 {
-    if(low >= high)	//如果左边索引大于或者等于右边的索引就代表已经整理完成一个组了
-    {
-        return 0;
-    }
-    int i = low;
-    int j = high;
-    stud_Node pivot = stud_Array[low];
+	if(low >= high)	//如果左边索引大于或者等于右边的索引就代表已经整理完成一个组了
+	{
+		return 0;
+	}
+	int i = low;
+	int j = high;
+	stud_Node pivot = stud_Array[low];
      
-    while(i < j)                               /*控制在当组内寻找一遍*/
-    {
-        while (i < j && 
+	while(i < j)                               /*控制在当组内寻找一遍*/
+	{
+	while (i < j && 
 			  ((pivot.Total > stud_Array[j].Total) || 	//j 总成绩小于 pivot, 不用交换
 			  (pivot.Total == stud_Array[j].Total && pivot.Math > stud_Array[j].Math) || 	// j 总成绩与 pivot 相等, 数学低于 pivot
 			  (pivot.Total == stud_Array[j].Total && pivot.Math == stud_Array[j].Math && pivot.ID > stud_Array[j].ID)))	//i 总成绩、数学均与 pivot 相等, 学号大于 pivot
-        {
-            j--;	//向前寻找
-        }
-        stud_Array[i] = stud_Array[j];         
-        while (i < j && 
+		{
+			j--;	//向前寻找
+		}
+		stud_Array[i] = stud_Array[j];         
+		while (i < j && 
 			  ((pivot.Total < stud_Array[i].Total) || 	//i 总成绩大于 pivot, 不用交换
 			  (pivot.Total == stud_Array[i].Total && pivot.Math < stud_Array[i].Math) || 	// i 总成绩与 pivot 相等, 数学高于 pivot
 			  (pivot.Total == stud_Array[i].Total && pivot.Math == stud_Array[i].Math && pivot.ID < stud_Array[i].ID)))	//j 总成绩、数学均与 pivot 相等, 学号小于 pivot
-        {
-            i++;
-        }
-        stud_Array[j] = stud_Array[i];
-    }
+		{
+			i++;
+		}
+		stud_Array[j] = stud_Array[i];
+	}
      
-    stud_Array[i] = pivot;	//当在当组内找完一遍以后就把中间数key回归
+	stud_Array[i] = pivot;	//当在当组内找完一遍以后就把中间数key回归
 	return i;
 }
 
 void QuickSort(stud_Node *stud_Array, int low, int high)
 {
 	if(low < high)
-	{	
+	{
 		int mid = Partition(stud_Array, low, high);
 		QuickSort(stud_Array, low, mid - 1);
 		QuickSort(stud_Array, mid + 1, high);
