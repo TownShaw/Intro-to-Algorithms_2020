@@ -7,6 +7,7 @@
 typedef struct BiTree
 {
 	int Time;
+	int Bigger_Than;	//在该子树中小于该节点 Time 的节点个数
 	struct BiTree *Parent;
 	struct BiTree *LChild;
 	struct BiTree *RChild;
@@ -16,25 +17,36 @@ BiTreeNode* CreateNode(int Time)
 {
 	BiTreeNode *pNew = (BiTreeNode *)malloc(sizeof(BiTreeNode));
 	pNew->Time = Time;
+	pNew->Bigger_Than = 0;
 	pNew->Parent = NULL;
 	pNew->LChild = NULL;
 	pNew->RChild = NULL;
 	return pNew;
 }
 
-void getMin_k(BiTreeNode *pRoot, int k, int *num, int *Time)
+int getMin_k(BiTreeNode *pRoot, int k)
 {//得到第 k 小的 Time
 	if (pRoot == NULL)	//根节点为空, 未找到, 返回 -1
 	{
-		return;
+		return 0;
 	}
-	getMin_k(pRoot->LChild, k, num, Time);
-	*num += 1;
-	if (*num == k)
+	else if (pRoot->Bigger_Than + 1 == k)
 	{
-		*Time = pRoot->Time;
+		return pRoot->Time;
 	}
-	getMin_k(pRoot->RChild, k, num, Time);
+	else if (pRoot->Bigger_Than + 1 > k)
+	{
+		return getMin_k(pRoot->LChild, k);
+	}
+	else
+	{
+		return getMin_k(pRoot->RChild, k - (pRoot->Bigger_Than + 1));
+	}
+}
+
+void Transplant(BiTreeNode **pRoot, BiTreeNode *pNew, BiTreeNode *pOld)
+{//在 pRoot 为根的树中将以 pOld 为根的子树替换为以 pNew 为根的子树
+
 }
 
 void Insert(BiTreeNode *pRoot, int Time)	//通过 Insert() 操作维护一个二叉搜索树
@@ -43,9 +55,10 @@ void Insert(BiTreeNode *pRoot, int Time)	//通过 Insert() 操作维护一个二
 	BiTreeNode *pPre = pRoot;	//pPre 为 pTemp 父节点
 	while(pTemp != NULL)
 	{	//找到待插入的位置, 总是插在叶节点处
-		if (Time < pTemp->Time)
+		if (Time <= pTemp->Time)
 		{
 			pPre = pTemp;
+			pTemp->Bigger_Than++;
 			pTemp = pPre->LChild;
 		}
 		else
@@ -56,7 +69,7 @@ void Insert(BiTreeNode *pRoot, int Time)	//通过 Insert() 操作维护一个二
 	}
 
 	BiTreeNode *pNew = CreateNode(Time);	//新建待插入节点
-	if (Time < pPre->Time)	//插入新建节点 pNew
+	if (Time <= pPre->Time)	//插入新建节点 pNew
 	{
 		pPre->LChild = pNew;
 		pNew->Parent = pPre;
@@ -68,11 +81,12 @@ void Insert(BiTreeNode *pRoot, int Time)	//通过 Insert() 操作维护一个二
 	}
 }
 
-BiTreeNode *Find_Min(BiTreeNode *pRoot)
+BiTreeNode *__Find_Min(BiTreeNode *pRoot)
 {
 	BiTreeNode *pTemp = pRoot;
 	while (pTemp->LChild != NULL)
 	{
+		pTemp->Bigger_Than--;
 		pTemp = pTemp->LChild;
 	}
 	return pTemp;
@@ -85,6 +99,7 @@ void Delete(BiTreeNode **pRoot, int Time)
 	{
 		if (pTemp->Time > Time)
 		{
+			pTemp->Bigger_Than--;
 			pTemp = pTemp->LChild;
 		}
 		else
@@ -112,7 +127,7 @@ void Delete(BiTreeNode **pRoot, int Time)
 	}
 	else if (pTemp->LChild != NULL && pTemp->RChild != NULL)
 	{
-		BiTreeNode *pMin = Find_Min(pTemp->RChild);
+		BiTreeNode *pMin = __Find_Min(pTemp->RChild);
 		pTemp->Time = pMin->Time;
 		if (pMin->RChild == NULL)
 		{//pMin->LChild 必为 NULL
@@ -202,7 +217,7 @@ void Pre_Order_Traverse(BiTreeNode *pRoot)
 {
 	if (pRoot != NULL)
 	{
-		printf("%d\t", pRoot->Time);
+		printf("%d: %d\t", pRoot->Time, pRoot->Bigger_Than);
 		Pre_Order_Traverse(pRoot->LChild);
 		Pre_Order_Traverse(pRoot->RChild);
 	}
@@ -213,7 +228,7 @@ void In_Order_Traverse(BiTreeNode *pRoot)
 	if (pRoot != NULL)
 	{
 		In_Order_Traverse(pRoot->LChild);
-		printf("%d\t", pRoot->Time);
+		printf("%d: %d\t", pRoot->Time, pRoot->Bigger_Than);
 		In_Order_Traverse(pRoot->RChild);
 	}
 }
@@ -254,8 +269,7 @@ int main()
 
 		case 'K':
 			scanf("%d", &k);
-			getMin_k(pRoot, k, &num, &Time);
-			printf("%d\n", Time);
+			printf("%d\n", getMin_k(pRoot, k));
 			break;
 
 		default:
