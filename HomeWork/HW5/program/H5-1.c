@@ -82,7 +82,7 @@ void Insert(BiTreeNode *pRoot, int Time)	//通过 Insert() 操作维护一个二
 }
 
 BiTreeNode *__Find_Min(BiTreeNode *pRoot)
-{
+{//!!! 仅可用于 Delete() 函数内部 !!!
 	BiTreeNode *pTemp = pRoot;
 	while (pTemp->LChild != NULL)
 	{

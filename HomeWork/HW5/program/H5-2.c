@@ -32,11 +32,11 @@ void Union_Root(int *Student, int Root_1, int Root_2)
 
 void Union(int *Student, int i, int j)	//Student[i]与Student[j]所在的Set进行合并
 {
-	int pRoot_1 = Find_Set(Student, i);
-	int pRoot_2 = Find_Set(Student, j);
-	if (pRoot_1 != pRoot_2)
+	int Root_1 = Find_Set(Student, i);
+	int Root_2 = Find_Set(Student, j);
+	if (Root_1 != Root_2)
 	{
-		Union_Root(Student, pRoot_1, pRoot_2);
+		Union_Root(Student, Root_1, Root_2);
 	}
 }
 
@@ -67,10 +67,10 @@ int main()
 		scanf("%d", &Stu_1);
 		scanf("%d", &Stu_2);
 
-		int pRoot_1 = Find_Set(Student, Stu_1);
-		int pRoot_2 = Find_Set(Student, Stu_2);
+		int Root_1 = Find_Set(Student, Stu_1);
+		int Root_2 = Find_Set(Student, Stu_2);
 
-		if (pRoot_1 == pRoot_2)
+		if (Root_1 == Root_2)
 		{
 			printf("1 ");
 		}
