@@ -2,79 +2,44 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-typedef struct Node
+int *initStudent(int n)
 {
-	struct Node *pNode;
-}Node;
-
-Node **initStudent(int n)
-{
-	Node **Student = (Node **)malloc(sizeof(Node *) * n);
+	int *Student = (int *)malloc(sizeof(int) * n);
 
 	for (int i = 0; i < n; i++)
 	{
-		Student[i] = (Node *)malloc(sizeof(Node));
-		Student[i]->pNode = Student[i];
+		Student[i] = i;
 	}
 
 	return Student;
 }
 
-Node *Find_Set(Node *pStu)
-{/*
-	Node *pRoot = pStu;
-	while (pRoot->pNode != pRoot)
-	{
-		pRoot = pRoot->pNode;
-	}
-	//此时 pTemp 指向根节点(或者说代表节点)
-
-	Node *pTemp = pStu;
-
-	while (pTemp->pNode != pTemp)
-	{
-		pStu->pNode = pRoot;
-		pStu = pTemp;
-		pTemp = pTemp->pNode;
-	}
-
-	return pRoot;
-	*/
-
-	if (pStu->pNode != pStu)
+int Find_Set(int *Student, int index)
+{
+	if (Student[index] != index)
     {
-    	pStu->pNode = Find_Set(pStu->pNode);
+    	Student[index] = Find_Set(Student, Student[index]);
     }
   	
-  	return pStu->pNode;
+  	return Student[index];
 }
 
-void Union_Root(Node *pRoot_1, Node *pRoot_2)
+void Union_Root(int *Student, int Root_1, int Root_2)
 {
-	pRoot_1->pNode = pRoot_2;
-	pRoot_2->pNode = pRoot_2;
+	Student[Root_1] = Root_2;
+	Student[Root_2] = Root_2;
 }
 
-void Union(Node **Student, int i, int j)	//Student[i]与Student[j]所在的Set进行合并
+void Union(int *Student, int i, int j)	//Student[i]与Student[j]所在的Set进行合并
 {
-	Node *pRoot_1 = Find_Set(Student[i]);
-	Node *pRoot_2 = Find_Set(Student[j]);
+	int pRoot_1 = Find_Set(Student, i);
+	int pRoot_2 = Find_Set(Student, j);
 	if (pRoot_1 != pRoot_2)
 	{
-		Union_Root(pRoot_1, pRoot_2);
+		Union_Root(Student, pRoot_1, pRoot_2);
 	}
 }
 
-void Free_Student(Node **Student, int n)
-{
-	for (int i = 0; i < n; i++)
-	{
-		free(Student[i]);
-	}
-	
-	free(Student);
-}
 
 int main()
 {
@@ -86,7 +51,7 @@ int main()
 	scanf("%d", &k);	//查询次数
 	scanf("%d", &m);	//关系对数
 
-	Node **Student = initStudent(n);
+	int *Student = initStudent(n);
 
 	for (int i = 0; i < m; i++)
 	{
@@ -102,8 +67,8 @@ int main()
 		scanf("%d", &Stu_1);
 		scanf("%d", &Stu_2);
 
-		Node *pRoot_1 = Find_Set(Student[Stu_1]);
-		Node *pRoot_2 = Find_Set(Student[Stu_2]);
+		int pRoot_1 = Find_Set(Student, Stu_1);
+		int pRoot_2 = Find_Set(Student, Stu_2);
 
 		if (pRoot_1 == pRoot_2)
 		{
@@ -116,6 +81,6 @@ int main()
 
 	}
 
-	Free_Student(Student, n);
+	free(Student);
 	return 0;
 }
