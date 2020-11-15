@@ -9,24 +9,20 @@ typedef struct AllocNode
 {
 	int Left;	//记录左端点 
 	int Right;	//记录右端点
-	struct AllocNode *pNext;
+	struct AllocNode *LChild;
+	struct AllocNode *RChild;
 }AllocNode;
 
-typedef struct AllocList
+typedef struct AllocTree
 {
-	AllocNode *pHead;
-	int Length;
-}AllocList;
+	AllocNode *pRoot;
+}AllocTree;
 
-AllocList *initList()
+AllocTree *initTree()
 {
-	AllocList *List = (AllocList *)malloc(sizeof(AllocList));
-	List->pHead = (AllocNode *)malloc(sizeof(AllocNode));
-	List->pHead->Left = -1;
-	List->pHead->Right = -1;
-	List->pHead->pNext = NULL;	//初始化头节点
-	List->Length = 0;
-	return List;
+	AllocTree *Tree = (AllocTree *)malloc(sizeof(AllocTree));
+	Tree->pRoot = NULL;
+	return Tree;
 }
 
 AllocNode *CreateNode(int Left, int Right)
@@ -34,45 +30,56 @@ AllocNode *CreateNode(int Left, int Right)
 	AllocNode *pNew = (AllocNode *)malloc(sizeof(AllocNode));
 	pNew->Left = Left;
 	pNew->Right = Right;
-	pNew->pNext = NULL;
+	pNew->LChild = NULL;
+	pNew->RChild = NULL;
 	return pNew;
 }
 
-int AllocMem(AllocList *List, int Left, int Right)
+int AllocMem(AllocTree *Tree, int Left, int Right)
 {//在 Array 中 找到 Point 待插入的位置, 若找到的位置不能分配则返回 NIL
-	AllocNode *pTemp = List->pHead;
-	while (pTemp->pNext != NULL)
+	AllocNode *pTemp = Tree->pRoot;
+	AllocNode *pPre = NULL;
+	while (pTemp != NULL)
 	{
-		if (Right < pTemp->pNext->Left)
-		{
-			break;
+		pPre = pTemp;
+		if (Right < pTemp->Left)
+		{//待插入区间在 pTemp 左边
+			pTemp = pTemp->LChild;
 		}
-		pTemp = pTemp->pNext;
+		else if (Left > pTemp->Right)
+		{//待插入区间在 pTemp 右边
+			pTemp = pTemp->RChild;
+		}
+		else
+		{//发生重叠
+			return FALSE;
+		}
 	}
-	if (pTemp == List->pHead || Left > pTemp->Right)
+	AllocNode *pNew = CreateNode(Left, Right);
+	if (Tree->pRoot == NULL)
 	{
-		AllocNode *pNew = CreateNode(Left, Right);	//插入分配区域
-		pNew->pNext = pTemp->pNext;
-		pTemp->pNext = pNew;
-		List->Length++;
-		return TRUE;
+		Tree->pRoot = pNew;
+	}
+	else if (Right < pPre->Left)
+	{
+		pPre->LChild = pNew;
 	}
 	else
 	{
-		return FALSE;
+		pPre->RChild = pNew;
 	}
+	
+	return TRUE;
 }
 
-void Free_List(AllocList *List)
+void Free_AllocArea(AllocNode *pRoot)
 {
-	AllocNode *pTemp = List->pHead;
-	while (pTemp != NULL)
+	if (pRoot != NULL)
 	{
-		pTemp = pTemp->pNext;
-		free(List->pHead);
-		List->pHead = pTemp;
+		Free_AllocArea(pRoot->LChild);
+		Free_AllocArea(pRoot->RChild);
+		free(pRoot);
 	}
-	free(List);
 }
 
 int main()
@@ -80,7 +87,7 @@ int main()
 	int n = 0;	//分配 n 次
 	scanf("%d", &n);
 
-	AllocList *List = initList();
+	AllocTree *Tree = initTree();
 
 	for (int i = 0; i < n; i++)
 	{
@@ -89,7 +96,7 @@ int main()
 		scanf("%d", &Left);
 		scanf("%d", &Right);
 
-		int stus = AllocMem(List, Left, Right);
+		int stus = AllocMem(Tree, Left, Right);
 
 		if (stus == FALSE)	//分配失败
 		{
@@ -101,6 +108,6 @@ int main()
 		}
 	}
 
-	Free_List(List);
+	Free_AllocArea(Tree->pRoot);
 	return 0;
 }
