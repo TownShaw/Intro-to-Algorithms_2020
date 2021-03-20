@@ -17,11 +17,11 @@ int *initStudent(int n)
 int Find_Set(int *Student, int index)
 {
 	if (Student[index] != index)
-    {
-    	Student[index] = Find_Set(Student, Student[index]);
-    }
-  	
-  	return Student[index];
+	{
+		Student[index] = Find_Set(Student, Student[index]);
+	}
+	
+	return Student[index];
 }
 
 void Union_Root(int *Student, int Root_1, int Root_2)

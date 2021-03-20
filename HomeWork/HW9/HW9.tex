@@ -1,0 +1,36 @@
+\documentclass{article}
+\usepackage[UTF8]{ctex}
+\usepackage[left=2cm,right=2cm,top=1.5cm,bottom=1.5cm]{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{fontspec}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{graphics}
+\usepackage[thmmarks,amsmath]{ntheorem}
+\setmonofont{Consolas}
+\lstset{numbers=left, numberstyle=\tiny, keywordstyle=\color{blue!70}, commentstyle=\color{red!50!green!50!blue!50}, rulesepcolor=\color{red!20!green!20!blue!20}, frame=shadowbox, basicstyle=\ttfamily, breaklines=true, tabsize=4}
+
+\begin{document}
+    \title{HW 9}
+    \author{肖桐 PB18000037}
+    \date{2021 年 1 月 2 日}
+    \maketitle
+
+    \newtheorem*{solution}{解}
+
+    \begin{solution}\textnormal{\textbf{1.}}
+        假设现有 $n$ 个 $bool$ 值 $x_1, \dots, x_n$ 需要满足 $2-SAT$ 问题. 首先将 $n$ 个 $bool$ 变量抽象为图中 $2n$ 个顶点,
+        分别为 $x_{1t}, \dots, x_{nt}$ 和 $x_{1f}, \dots, x_{nf}$. 分别代表 $x_i = true$ 和 $x_i = false$.\newline
+        首先将 $m$ 个需要满足的表达式中的逻辑运算符 $\vee$ 和 $\wedge$ 都代换为实质蕴涵 $\to$ 和 非运算 $\neg$.\newline
+        因为实质蕴涵具有保真性, 则对 $x_{i*} \to x_{j*}$, 在图中画一条由 $x_{i*}$ 指向 $x_{j*}$ 的有向边.\newline
+        然后使用 $Tarjan$ 算法对图进行遍历, 寻找强连通分量. 每个强连通分量中的顶点真值都是相同的, 因此只要判断是否存在两个顶点 $x_{it}, x_{if}$ 处于同一个强连通分量即可.\newline
+        若存在这样的顶点, 则该 $2-SAT$ 问题无解, 否则有解, 这一过程的时间复杂度为 $O(V)$.\newline
+        $Tarjan$ 算法时间复杂度为 $O(V + E)$, 从而满足要求.
+    \end{solution}
+    \begin{solution}\textnormal{\textbf{2.}}
+        \begin{figure}[h]
+            \includegraphics*[scale=0.2]{1.jpg}
+        \end{figure}
+    \end{solution}
+\end{document}

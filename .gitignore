@@ -4,3 +4,6 @@
 *.gz
 *.exe
 *.out
+*.py
+*.sh
+*.txt

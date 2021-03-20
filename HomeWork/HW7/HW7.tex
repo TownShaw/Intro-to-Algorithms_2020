@@ -1,0 +1,74 @@
+\documentclass{article}
+\usepackage[UTF8]{ctex}
+\usepackage[left=2cm,right=2cm,top=1.5cm,bottom=1.5cm]{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{fontspec}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage[thmmarks,amsmath]{ntheorem}
+\setmonofont{Consolas}
+\lstset{numbers=left, numberstyle=\tiny, keywordstyle=\color{blue!70}, commentstyle=\color{red!50!green!50!blue!50}, rulesepcolor=\color{red!20!green!20!blue!20}, frame=shadowbox, basicstyle=\ttfamily, breaklines=true, tabsize=4}
+
+\begin{document}
+	\title{HW 7}
+	\author{肖桐 PB18000037}
+	\date{2020 年 12 月 8 日}
+	\maketitle
+
+	\newtheorem*{solution}{解}
+
+	\begin{solution}\textnormal{\textbf{1.}}
+		假设$2^k \leq n < 2^{k + 1},\ k \in N$, 故$n$次操作总代价为：
+		$$
+		C = \sum_{i = 0}^{k}2^{i} + (n - k) = 2^{k + 1} + n - k - 1
+		$$
+		使用聚合分析可得摊还代价为：
+		$$
+		\dfrac{C}{n} = \dfrac{2^{k + 1} + n - k - 1}{n} \leq \dfrac{2^{k + 1} + n - k - 1}{2^k} = 2 - \dfrac{1}{2^k} + \dfrac{n}{2^k} - \dfrac{k}{2^k} \leq 2 + 2 = 4
+		$$
+		故摊还代价为$O(1)$.
+	\end{solution}
+	\begin{solution}\textnormal{\textbf{2.}}
+		由第一题的结论, 可以为所有的操作赋予费用$\hat{c} = 4$. 则$n$次操作的摊还代价为$\hat{c}n = 4n$.\newline
+		而对任意的$n$, 实际操作代价为：$2^{k + 1} + n - k - 1$. 下面只需比较摊还代价和实际代价的大小即可.\newline
+		因为：
+		$$
+			2^{k + 1} + n - k - 1 = 2 \times 2^k + n - k - 1 \leq 2n + n - k - 1 \leq 3n < 4n
+		$$
+		因此对任何$n$, 都有摊还代价大于实际代价. 因此单个操作的摊还代价$O(1)$.
+	\end{solution}
+	\begin{solution}\textnormal{\textbf{3.}}
+		记$\Phi(D_i)$为第$i$个操作的势能. 则令$\Phi(D_0) = 0, \Phi(D_i) = 1,\ i > 0$. 显然满足$\Phi(D_n) \geq 0$.\newline
+		假设$2^k \leq n < 2^{k + 1}, k \in N$, 故$n$次操作的摊还代价为
+		$$
+		\hat{C} = C + 1 = \sum_{i = 0}^{k}2^i + (n - k) + 1 = 2^{k + 1} + n - k
+		$$
+		由第一题的结论知：单个操作的摊还代价为
+		$$
+		\dfrac{\hat{C}}{n} \leq \dfrac{2^{k + 1} + n - k}{2^k} \leq 4
+		$$
+		故单个操作的摊还代价为$O(1)$.
+	\end{solution}
+	\begin{solution}\textnormal{\textbf{4.}}
+		(a). 
+		$$
+		\begin{aligned}
+		y_{k_1, \dots, k_d} &= \sum_{j_1 = 0}^{n_1 - 1} \cdots \sum_{j_d = 0}^{n_d - 1}a_{j_1, \dots, j_d}\omega_{n_1}^{j_1k_1}\cdots \omega_{n_d}^{j_dk_d} \\
+		&= \sum_{j_d = 0}^{n_d - 1} \cdots \sum_{j_1 = 0}^{n_1 - 1}a_{j_1, \dots, j_d}\omega_{n_1}^{j_1k_1}\cdots \omega_{n_d}^{j_dk_d} \\
+		&= \sum_{j_d = 0}^{n_d - 1} \cdots \sum_{j_2 = 0}^{n_2 - 1}\left(\sum_{j_1 = 0}^{n_1 - 1}a_{j_1, \dots, j_d}\omega_{n_1}^{j_1k_1}\right)\omega_{n_2}^{j_2k_2}\cdots \omega_{n_d}^{j_dk_d}
+		\end{aligned}
+		$$
+		显然括号中的计算即第一维计算共需计算$n_2n_3\cdots n_d = \dfrac{n}{n_1}$次. 依此类推, 第$k$维需要计算$n_{k + 1}\cdots n_d = \dfrac{n}{n_1\cdots n_k}$次. 一直计算到第$d$维, 则$d$维的傅里叶变换计算完成.\newline
+		(b). 因为求和的个数为有限个, 所以求和的顺序可以进行调换. 计算结果与计算次序无关.\newline
+		(c). 因为对第$i$维执行$FFT$算法的时间复杂度为$O(n_i\lg n_i)$, 且共重复了$\dfrac{n}{n_1\cdots n_i}$次, 因此第$i$维的总时间为$O(n_i\lg n_i)\dfrac{n}{n_1\cdots n_i} = O\left(\dfrac{n}{n_1\cdots n_{i - 1}\lg n_i}\right)$. 则$d$维的总时间复杂度为：
+		$$
+		\sum_{i = 1}^{d}\dfrac{n}{n_1\cdots n_{i - 1}}\lg n_i \leq \left(n + \dfrac{n}{n_1} + \cdots + \dfrac{n}{n_1\cdots n_{d - 1}}\right)\lg n
+		$$
+		因为$n_i \geq 2,\ i \geq 1$, 故总时间复杂度为：
+		$$
+		\left(n + \dfrac{n}{n_1} + \cdots + \dfrac{n}{n_1\cdots n_{d - 1}}\right)\lg n \leq n\lg n \sum_{i = 0}^{d - 1}\dfrac{1}{2^{i}} < 2n\lg n
+		$$
+		故总复杂度为$O(n\lg n)$, 与$d$无关.
+	\end{solution}
+\end{document}
